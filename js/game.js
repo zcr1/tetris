@@ -1,3 +1,7 @@
+// move left, right
+// rotate up
+// fall down
+
 
 class Game{
 
@@ -7,40 +11,95 @@ class Game{
     this.width = width;
     this.height = height;
     this.blockSize = blockSize;
-    this.blockColors = {
-      EMPTY: '#BDBDBD',
-      z: '#FFCDD2' // red
-    }
+    this.blocks = {
+      E: {
+        color: '#9E9E9E', // gray
+        shape: null
+      },
+      I: {
+        color: '#03A9F4', // light-blue
+        shape: []
+      },
+      J: {
+        color: '#3F51B5', // blue
+        shape: []
+      },
+      L: {
+        color: '#FF9800', // orange
+        shape: []
+      },
+      O: {
+        color: '#FFEB3B', // yellow
+        shape: []
+      },
+      S: {
+        color: '#4CAF50', // green
+        shape: []
+      },
+      T: {
+        color: '#C5CAE9', // purple
+        shape: []
+      },
+      Z: {
+        color: '#FFCDD2', // red
+        shape: []
+      }
+    };
+    this.initialize();
+  }
 
-
+  initialize(){
+    // Initialize a new game
     this.board = [];
-    for (let x = 0; x < width; x++){
+    for (let y = -3; y < this.height; y++){
+      // Store 4 extra rows on top but don't draw them
       let row = [];
-      for (let y = 0; y < height; y++){
-        row.push(new Tile('EMPTY', x * blockSize, y * blockSize, blockSize));
+      for (let x = 0; x < this.width; x++){
+        row.push(new Tile('E', x * this.blockSize, y * this.blockSize, this.blockSize));
       }
       this.board.push(row);
     }
   }
 
+  startGame(){
+    this.initialize()
+    setInterval(this.update, 250);
+  }
+
+  update(){
+    // Game loop
+    let nextBlock = this.getNextBlock();
+
+
+  }
+
+  getNextBlock(){
+    // get 1 of 7 blocks randomly
+    let i = Math.floor(Math.random() * (7));
+  }
+
   drawBoard(){
-    // this.ctx.fillStyle = '#333';
-    // this.ctx.lineWidth="1";
-    // this.ctx.rect(0, 0, 50, 50);
-    // this.ctx.stroke();
-    for (let row of this.board){
-      for (let tile of row){
+    for (let y = 0; y < this.board.length; y++){
+      for (let tile of this.board[y]){
         this.drawTile(tile);
       }
     }
   }
 
   drawTile(tile){
-    console.log(tile);
     switch (tile.type){
-      case 'EMPTY':
-        this.ctx.fillStyle = this.blockColors.empty;
-        this.ctx.strokeRect(tile.x, tile.y, tile.size, tile.size);
+      case 'E':
+        // Empty blocks draw a tiny square in center of tile
+        let size = 2;
+        let x = (tile.x + this.blockSize) - (this.blockSize / 2) - (size / 2);
+        let y = (tile.y + this.blockSize) - (this.blockSize / 2) - (size / 2);
+        this.ctx.fillStyle = this.blocks.E.color;
+        this.ctx.fillRect(x, y, 2, 2);
+        break;
+
+      default:
+        this.ctx.fillStyle = this.blocks[tile.type].color;
+        this.ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
         break;
     }
   }

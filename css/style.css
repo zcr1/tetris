@@ -22,7 +22,8 @@ body{
 #canvas{
     width: 400px;
     height: 500px;
-    background-color: #FAFAFA;
+    background-color: #212121;
+    border: 1px solid #9E9E9E;
     position: absolute;
     top: 50%;
     left: 50%;
