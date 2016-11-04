@@ -11,6 +11,7 @@ class Game{
     this.width = width;
     this.height = height;
     this.blockSize = blockSize;
+    this.blockChoices = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
     this.blocks = BLOCKS;
     this.initialize();
   }
@@ -18,6 +19,9 @@ class Game{
   initialize(){
     // Initialize a new game
     this.board = [];
+    this.currBlock = null;
+    this.currBlockPos = null;
+
     for (let y = -3; y < this.height; y++){
       // Store 4 extra rows on top but don't draw them
       let row = [];
@@ -30,19 +34,34 @@ class Game{
 
   startGame(){
     this.initialize()
-    setInterval(this.update, 250);
+    setInterval(this.update.bind(this), 500);
   }
 
   update(){
     // Game loop
-    let nextBlock = this.getNextBlock();
+    if (!this.currBlock){
+      this.currBlock = this.getNextBlock();
+      this.currShapeIndex = 0;
+      this.currBlockPos = {x: (this.width / 2) - 2, y: 0};
+    }
+    else{
+      this.updateBlockPos();
+    }
 
+    this.drawBoard()
+    this.drawCurrentBlock();
+  }
 
+  updateBlockPos(){
+    // increment y position
+    this.currBlockPos.y += this.blockSize;
   }
 
   getNextBlock(){
-    // get 1 of 7 blocks randomly
+    // get 1 of the 7 blocks randomly
     let i = Math.floor(Math.random() * (7));
+    let blockChoice = this.blockChoices[i];
+    return this.blocks[blockChoice];
   }
 
   drawBoard(){
@@ -70,6 +89,22 @@ class Game{
         break;
     }
   }
+
+  drawCurrentBlock(){
+    // Each block shape is 4x4
+    this.ctx.fillStyle = this.currBlock.color;
+    let shape = this.currBlock.shapes[this.currShapeIndex];
+    for (let y = 0; y < 4; y ++){
+      for (let x = 0; x < 4; x++){
+        if (shape[x][y] == 1){
+          let xPos = this.currBlockPos.x + (x * this.blockSize);
+          let yPos = this.currBlockPos.y + (y * this.blockSize);
+          this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+        }
+      }
+    }
+  }
+
 }
 
 
