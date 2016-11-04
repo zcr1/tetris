@@ -1,0 +1,34 @@
+html{
+    height: 100%;
+}
+
+body{
+    height: auto;
+    background-color: #C8E6C9;
+    color: #333;
+}
+
+#container{
+    width: 900px;
+    height: 600px;
+    background-color: #E8F5E9;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#canvas{
+    width: 400px;
+    height: 500px;
+    background-color: #FAFAFA;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+/* good red FFCDD2 faa */
+/* good purple  #C5CAE9 */
