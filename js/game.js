@@ -11,40 +11,7 @@ class Game{
     this.width = width;
     this.height = height;
     this.blockSize = blockSize;
-    this.blocks = {
-      E: {
-        color: '#9E9E9E', // gray
-        shape: null
-      },
-      I: {
-        color: '#03A9F4', // light-blue
-        shape: []
-      },
-      J: {
-        color: '#3F51B5', // blue
-        shape: []
-      },
-      L: {
-        color: '#FF9800', // orange
-        shape: []
-      },
-      O: {
-        color: '#FFEB3B', // yellow
-        shape: []
-      },
-      S: {
-        color: '#4CAF50', // green
-        shape: []
-      },
-      T: {
-        color: '#C5CAE9', // purple
-        shape: []
-      },
-      Z: {
-        color: '#FFCDD2', // red
-        shape: []
-      }
-    };
+    this.blocks = BLOCKS;
     this.initialize();
   }
 
