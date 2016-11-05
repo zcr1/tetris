@@ -1,8 +1,3 @@
-// move left, right
-// rotate up
-// fall down
-
-
 class Game{
 
   constructor(canvas, width, height, blockSize){
@@ -65,16 +60,13 @@ class Game{
 
     // Check if current block needs set
     let shape = this.currBlock.shapes[this.currShapeIndex];
-    for (let x = 0; x < 4; x++){
-      for (let y = 0; y < 4; y++){
-        if (shape[x][y] == 1){
-          let xPos = this.currBlockPos.x + (x * this.blockSize);
-          let yPos = this.currBlockPos.y + (y * this.blockSize);
-          if (this.isCollision(xPos, yPos + this.blockSize)){
-            this.setBlock();
-            return;
-          }
-        }
+    for (let [x, y] of this.getShapeBlocksCords(shape)){
+      let xPos = this.currBlockPos.x + (x * this.blockSize);
+      let yPos = this.currBlockPos.y + (y * this.blockSize);
+
+      if (this.isCollision(xPos, yPos + this.blockSize)){
+        this.setBlock();
+        return;
       }
     }
   }
@@ -99,14 +91,10 @@ class Game{
   setBlock(){
     // Set the current block "in stone"
     let shape = this.currBlock.shapes[this.currShapeIndex];
-    for (let x = 0; x < 4; x++){
-      for (let y = 0; y < 4; y++){
-        if (shape[x][y] == 1){
-          let xCord = (this.currBlockPos.x / this.blockSize) + x;
-          let yCord = (this.currBlockPos.y / this.blockSize) + y;
-          this.board[xCord][yCord].type = this.currBlock.type;
-        }
-      }
+    for (let [x, y] of this.getShapeBlocksCords(shape)){
+      let xCord = (this.currBlockPos.x / this.blockSize) + x;
+      let yCord = (this.currBlockPos.y / this.blockSize) + y;
+      this.board[xCord][yCord].type = this.currBlock.type;
     }
 
     this.currBlock = null;
@@ -148,19 +136,40 @@ class Game{
     this.ctx.fillStyle = this.currBlock.color;
     let shape = this.currBlock.shapes[this.currShapeIndex];
 
+    for (let [x, y] of this.getShapeBlocksCords(shape)){
+      let xPos = this.currBlockPos.x + (x * this.blockSize);
+      let yPos = this.currBlockPos.y + (y * this.blockSize);
+      this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+    }
+  }
+
+  * getShapeBlocksCords(shape){
+    // Generator to return cords in shape that are set to 1
     for (let x = 0; x < 4; x++){
       for (let y = 0; y < 4; y++){
         if (shape[x][y] == 1){
-          let xPos = this.currBlockPos.x + (x * this.blockSize);
-          let yPos = this.currBlockPos.y + (y * this.blockSize);
-          this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+          yield [x, y];
         }
       }
     }
   }
 
   move(x){
-    this.currBlockPos.x += this.blockSize * x;
+    // need to check movement of all blocks in current shape to verify move
+    let shape = this.currBlock.shapes[this.currShapeIndex];
+
+    let xPos = this.currBlockPos.x + this.blockSize * x;
+    let yPos = this.currBlockPos.y;
+
+    // not quite right
+
+    // in bounds?
+    if (xPos >= 0 && xPos < (this.width * this.blockSize)){
+      // collision?
+      if (!this.isCollision(xPos, yPos)){
+        this.currBlockPos.x = xPos;
+      }
+    }
   }
 
   rotate(){
