@@ -225,33 +225,50 @@ class Game{
     }
   }
 
+  isOutOfBounds(x, y, shape){
+    for (let [xCord, yCord] of this.getShapeBlocksCords(shape)){
+      let xPos = x + (xCord * this.blockSize);
+      let yPos = y + (yCord * this.blockSize);
+
+      if (xPos < 0 || xPos >= (this.width * this.blockSize)){
+        return true;
+      }
+    }
+  }
+
   move(dir){
     let shape = this.currBlock.shapes[this.currShapeIndex];
     let newX = this.currBlockPos.x + (this.blockSize * dir);
 
-    for (let [x, y] of this.getShapeBlocksCords(shape)){
-      let xPos = newX + (x * this.blockSize);
-      let yPos = this.currBlockPos.y + (y * this.blockSize);
-
-      if (xPos < 0 || xPos >= (this.width * this.blockSize)){
-        // out of bounds
-        return;
-      }
-
-      // check collision
+    if (!this.isOutOfBounds(newX, this.currBlockPos.y, shape)){
+      this.currBlockPos.x = newX;
     }
-
-    this.currBlockPos.x = newX;
   }
 
   rotate(){
-    // currShapeIndexor++ or loop back to 0
-    if (this.currShapeIndex != null && this.currBlock){
-      this.currShapeIndex++;
-      if (this.currShapeIndex > (this.currBlock.shapes.length - 1)){
-        this.currShapeIndex = 0;
+    let nextIndex = this.currShapeIndex;
+    if (this.currBlock){
+      nextIndex++;
+      if (nextIndex > (this.currBlock.shapes.length - 1)){
+        nextIndex = 0;
       }
     }
+
+    if (nextIndex == this.currShapeIndex){
+      // no rotation done
+      return;
+    }
+
+    // check if out of bounds
+    let shape = this.currBlock.shapes[nextIndex];
+    if (this.isOutOfBounds(this.currBlockPos.x, this.currBlockPos.y, shape)){
+      return;
+    }
+
+    // check collisions
+
+
+    this.currShapeIndex = nextIndex;
   }
 
   drop(){
