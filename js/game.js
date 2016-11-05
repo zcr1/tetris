@@ -120,7 +120,6 @@ class Game{
 
     while (flag && !this.gameOver){
       flag = false;
-      console.log('foo');
 
       yloop:
       for (let y = 0; y < this.height; y++){
