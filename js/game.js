@@ -82,6 +82,7 @@ class Game{
 
       if (this.isCollision(xPos, yPos + this.blockSize)){
         this.setBlock();
+        this.clearRows();
         return true;
       }
     }
@@ -102,6 +103,36 @@ class Game{
     }
 
     return this.board[xCord][yCord].type != 'E';
+  }
+
+  clearRows(){
+    let flag = true
+
+    do{
+      flag = false;
+      yloop:
+      for (let y = 0; y < this.height; y++){
+        for (let x = 0; x < this.width; x++){
+          if (this.board[x][y].type == 'E'){
+            continue yloop;
+          }
+        }
+
+        // clear row
+        for (let x = 0; x < this.width; x++){
+          this.board[x][y].type = 'E'
+        }
+
+        // drop all blocks above
+        for (let y2 = y; y2 > 0; y2--){
+          for (let x = 0; x < this.width; x++){
+            this.board[x][y2].type = this.board[x][y2 - 1].type;
+          }
+        }
+
+        flag = true;
+      }
+    } while(flag);
   }
 
   setBlock(){
@@ -126,6 +157,7 @@ class Game{
     // get 1 of the 7 blocks randomly
     let i = Math.floor(Math.random() * (7));
     let blockChoice = this.blockChoices[i];
+    blockChoice = 'I';
     let nextBlock = this.blocks[blockChoice];
     nextBlock.type = blockChoice;
     return nextBlock;
