@@ -9,22 +9,25 @@
   };
 
   document.addEventListener('keydown', e =>{
-    e.preventDefault();
     switch (e.which){
       case 37:
         // left
+        e.preventDefault();
         game.move(-1);
         break;
       case 38:
         // up
+        e.preventDefault();
         game.rotate();
         break;
       case 39:
         // right
+        e.preventDefault();
         game.move(1);
         break;
       case 40:
         // down
+        e.preventDefault();
         game.drop();
         break;
     }

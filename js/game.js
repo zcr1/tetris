@@ -3,6 +3,7 @@ class Game{
   constructor(canvas, width, height, blockSize){
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.ctx.strokeStyle = '#fff';
     this.width = width;
     this.height = height;
     this.blockSize = blockSize;
@@ -45,7 +46,7 @@ class Game{
 
       // block starts -4 blocks in y direction
       this.currBlockPos = {
-        x: (this.width / 2 - 2) * this.blockSize,
+        x: (this.width / 2 - 3) * this.blockSize,
         y: -(this.blockSize * 4)
       };
     }
@@ -134,18 +135,21 @@ class Game{
     }
     else{
       this.ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
+      this.ctx.strokeRect(tile.x, tile.y, tile.size, tile.size)
     }
   }
 
   drawCurrentBlock(){
     // Each block shape is 4x4
     this.ctx.fillStyle = this.currBlock.color;
+
     let shape = this.currBlock.shapes[this.currShapeIndex];
 
     for (let [x, y] of this.getShapeBlocksCords(shape)){
       let xPos = this.currBlockPos.x + (x * this.blockSize);
       let yPos = this.currBlockPos.y + (y * this.blockSize);
       this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+      this.ctx.strokeRect(xPos, yPos, this.blockSize, this.blockSize);
     }
   }
 
@@ -153,29 +157,32 @@ class Game{
     // Generator to return cords in shape that are set to 1
     for (let x = 0; x < 4; x++){
       for (let y = 0; y < 4; y++){
-        if (shape[x][y] == 1){
+        if (shape[y][x] == 1){
           yield [x, y];
         }
       }
     }
   }
 
-  move(x){
-    // need to check movement of all blocks in current shape to verify move
+  move(dir){
     let shape = this.currBlock.shapes[this.currShapeIndex];
+    let newX = this.currBlockPos.x + (this.blockSize * dir);
 
-    let xPos = this.currBlockPos.x + this.blockSize * x;
-    let yPos = this.currBlockPos.y;
+    for (let [x, y] of this.getShapeBlocksCords(shape)){
+      let xPos = newX + (x * this.blockSize);
+      let yPos = this.currBlockPos.y + (y * this.blockSize);
 
-    // not quite right
-
-    // in bounds?
-    if (xPos >= 0 && xPos < (this.width * this.blockSize)){
-      // collision?
-      if (!this.isCollision(xPos, yPos)){
-        this.currBlockPos.x = xPos;
+      if (xPos < 0 || xPos >= (this.width * this.blockSize)){
+        console.log('out')
+        // out of bounds
+        return;
       }
+
+      // check collision
     }
+
+    console.log('move bitch')
+    this.currBlockPos.x = newX;
   }
 
   rotate(){

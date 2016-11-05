@@ -11,7 +11,7 @@ body{
 #container{
     width: 900px;
     height: 700px;
-    background-color: #E8F5E9;
+    background-color: #C8E6C9;
     margin: auto;
     position: absolute;
     top: 50%;
@@ -41,7 +41,7 @@ button{
     text-transform: uppercase;
     text-decoration: none;
     border-radius: 4px;
-    border: 1px solid #bbb;
+    border: none;
     cursor: pointer;
     box-sizing: border-box;
 }
@@ -52,4 +52,9 @@ button:focus {
 
 #new-game{
     margin-top: 10em;
+    background-color: #9FA8DA;
+}
+
+#new-game:hover, #new-game:focus{
+    background-color: #7986CB;
 }

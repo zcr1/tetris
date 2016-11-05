@@ -107,7 +107,7 @@ var BLOCKS = {
     ]
   },
   T: {
-    color: '#C5CAE9', // purple
+    color: '#9C27B0', // purple
     shapes: [
       [
         [0,0,0,0],
