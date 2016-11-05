@@ -8,6 +8,7 @@ class Game{
     this.blockSize = blockSize;
     this.blockChoices = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
     this.blocks = BLOCKS;
+    this.loopInterval = null;
     this.initialize();
   }
 
@@ -29,7 +30,10 @@ class Game{
 
   startGame(){
     this.initialize()
-    setInterval(this.update.bind(this), 20);
+    if (this.loopInterval){
+      clearInterval(this.loopInterval);
+    }
+    this.loopInterval = setInterval(this.update.bind(this), 20);
   }
 
   update(){
@@ -173,7 +177,13 @@ class Game{
   }
 
   rotate(){
-
+    // currShapeIndexor++ or loop back to 0
+    if (this.currShapeIndex != null){
+      this.currShapeIndex++;
+      if (this.currShapeIndex > (this.currBlock.shapes.length - 1)){
+        this.currShapeIndex = 0;
+      }
+    }
   }
 
   drop(){
