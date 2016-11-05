@@ -19,6 +19,7 @@ class Game{
     this.currBlock = null;
     this.currBlockPos = null;
     this.delta = 0;
+    this.score = 0;
     this.gameOver = false;
     let gameover = document.getElementById('gameover');
     gameover.style.display = 'none';
@@ -68,6 +69,7 @@ class Game{
       if (this.currBlock){
         this.drawCurrentBlock();
       }
+      this.drawScore();
     }
   }
 
@@ -108,8 +110,9 @@ class Game{
   clearRows(){
     let flag = true
 
-    do{
+    while (flag){
       flag = false;
+
       yloop:
       for (let y = 0; y < this.height; y++){
         for (let x = 0; x < this.width; x++){
@@ -131,8 +134,9 @@ class Game{
         }
 
         flag = true;
+        this.score += 100;
       }
-    } while(flag);
+    }
   }
 
   setBlock(){
@@ -198,6 +202,11 @@ class Game{
       this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
       this.ctx.strokeRect(xPos, yPos, this.blockSize, this.blockSize);
     }
+  }
+
+  drawScore(){
+    let score = document.getElementById('score');
+    score.innerHTML = '<span>Score ' + this.score + '</span>';
   }
 
   drawGameOver(){

@@ -77,3 +77,11 @@ button:focus {
     color: #fff;
 
 }
+
+
+#score{
+    position: absolute;
+    right: 290px;
+    top: 55px;
+    color: #fff;
+}
