@@ -62,6 +62,7 @@ class Game{
       else if (this.delta >= 15){
         this.updateBlockGravity();
         this.delta = 0;
+        this.score+= 2;
       }
 
       this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
@@ -73,20 +74,27 @@ class Game{
     }
   }
 
-  updateBlockGravity(){
-    this.currBlockPos.y += this.blockSize;
-
+  checkBlockSet(xPos, yPos, shape){
     // Check if current block needs set
-    let shape = this.currBlock.shapes[this.currShapeIndex];
-    for (let [x, y] of this.getShapeBlocksCords(shape)){
-      let xPos = this.currBlockPos.x + (x * this.blockSize);
-      let yPos = this.currBlockPos.y + (y * this.blockSize);
+    for (let [xCord, yCord] of this.getShapeBlocksCords(shape)){
+      let x = this.currBlockPos.x + (xCord * this.blockSize);
+      let y = this.currBlockPos.y + (yCord * this.blockSize);
 
-      if (this.shouldSet(xPos, yPos + this.blockSize)){
+      if (this.shouldSet(x, y + this.blockSize)){
         this.setBlock();
         this.clearRows();
         return true;
       }
+    }
+  }
+
+  updateBlockGravity(){
+    // Check if current block needs set
+    let shape = this.currBlock.shapes[this.currShapeIndex];
+
+    if (!this.checkBlockSet(this.currBlockPos.x, this.currBlockPos.y, shape)){
+      this.currBlockPos.y += this.blockSize;
+      return this.checkBlockSet(this.currBlockPos.x, this.currBlockPos.y, shape);
     }
   }
 
@@ -110,8 +118,9 @@ class Game{
   clearRows(){
     let flag = true
 
-    while (flag){
+    while (flag && !this.gameOver){
       flag = false;
+      console.log('foo');
 
       yloop:
       for (let y = 0; y < this.height; y++){
@@ -134,7 +143,7 @@ class Game{
         }
 
         flag = true;
-        this.score += 100;
+        this.score += 1000;
       }
     }
   }
@@ -161,7 +170,6 @@ class Game{
     // get 1 of the 7 blocks randomly
     let i = Math.floor(Math.random() * (7));
     let blockChoice = this.blockChoices[i];
-    blockChoice = 'I';
     let nextBlock = this.blocks[blockChoice];
     nextBlock.type = blockChoice;
     return nextBlock;
@@ -298,7 +306,7 @@ class Game{
   drop(){
     // instant drop block
     if (this.currBlock){
-      while (!this.updateBlockGravity());
+      while (!this.updateBlockGravity() && !this.gameOver);
     }
   }
 }

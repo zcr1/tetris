@@ -78,10 +78,24 @@ button:focus {
 
 }
 
-
 #score{
     position: absolute;
     right: 290px;
     top: 55px;
     color: #fff;
+}
+
+#controls{
+    position: absolute;
+    top: 670px;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+#controls span{
+    margin-right: .5em;
+}
+
+#controls span b{
+    color: #3F51B5;
 }
