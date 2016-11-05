@@ -9,6 +9,7 @@
   };
 
   document.addEventListener('keydown', e =>{
+    e.preventDefault();
     switch (e.which){
       case 37:
         // left

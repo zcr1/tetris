@@ -42,13 +42,15 @@ class Game{
     if (!this.currBlock){
       this.currShapeIndex = 0;
       this.currBlock = this.getNextBlock();
+
+      // block starts -4 blocks in y direction
       this.currBlockPos = {
         x: (this.width / 2 - 2) * this.blockSize,
-        y: -(this.blockSize * 4) // top starts 4 blocks negative
+        y: -(this.blockSize * 4)
       };
     }
     else if (this.delta >= 15){
-      this.updateBlock();
+      this.updateBlockGravity();
       this.delta = 0;
     }
 
@@ -59,7 +61,7 @@ class Game{
     }
   }
 
-  updateBlock(){
+  updateBlockGravity(){
     this.currBlockPos.y += this.blockSize;
 
     // Check if current block needs set
@@ -70,7 +72,7 @@ class Game{
 
       if (this.isCollision(xPos, yPos + this.blockSize)){
         this.setBlock();
-        return;
+        return true;
       }
     }
   }
@@ -178,7 +180,7 @@ class Game{
 
   rotate(){
     // currShapeIndexor++ or loop back to 0
-    if (this.currShapeIndex != null){
+    if (this.currShapeIndex != null && this.currBlock){
       this.currShapeIndex++;
       if (this.currShapeIndex > (this.currBlock.shapes.length - 1)){
         this.currShapeIndex = 0;
@@ -187,7 +189,10 @@ class Game{
   }
 
   drop(){
-
+    // instant drop block
+    if (this.currBlock){
+      while (!this.updateBlockGravity());
+    }
   }
 }
 
