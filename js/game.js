@@ -19,6 +19,9 @@ class Game{
     this.currBlock = null;
     this.currBlockPos = null;
     this.delta = 0;
+    this.gameOver = false;
+    let gameover = document.getElementById('gameover');
+    gameover.style.display = 'none';
 
     for (let x = 0; x < this.width; x++){
       let row = [];
@@ -39,26 +42,32 @@ class Game{
 
   update(){
     // Game loop
-    this.delta += 1;
-    if (!this.currBlock){
-      this.currShapeIndex = 0;
-      this.currBlock = this.getNextBlock();
-
-      // block starts -4 blocks in y direction
-      this.currBlockPos = {
-        x: (this.width / 2 - 3) * this.blockSize,
-        y: -(this.blockSize * 4)
-      };
+    if (this.gameOver){
+      clearInterval(this.loopInterval);
+      this.drawGameOver();
     }
-    else if (this.delta >= 15){
-      this.updateBlockGravity();
-      this.delta = 0;
-    }
+    else{
+      this.delta += 1;
+      if (!this.currBlock){
+        this.currShapeIndex = 0;
+        this.currBlock = this.getNextBlock();
 
-    this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
-    this.drawBoard()
-    if (this.currBlock){
-      this.drawCurrentBlock();
+        // block starts -4 blocks in y direction
+        this.currBlockPos = {
+          x: (this.width / 2 - 3) * this.blockSize,
+          y: -(this.blockSize * 4)
+        };
+      }
+      else if (this.delta >= 15){
+        this.updateBlockGravity();
+        this.delta = 0;
+      }
+
+      this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
+      this.drawBoard()
+      if (this.currBlock){
+        this.drawCurrentBlock();
+      }
     }
   }
 
@@ -96,11 +105,17 @@ class Game{
   }
 
   setBlock(){
-    // Set the current block "in stone"
+    // Set the current block "in stone" and check for game over
     let shape = this.currBlock.shapes[this.currShapeIndex];
     for (let [x, y] of this.getShapeBlocksCords(shape)){
       let xCord = (this.currBlockPos.x / this.blockSize) + x;
       let yCord = (this.currBlockPos.y / this.blockSize) + y;
+
+      if (yCord < 0){
+        this.gameOver = true;
+        return;
+      }
+
       this.board[xCord][yCord].type = this.currBlock.type;
     }
 
@@ -153,6 +168,11 @@ class Game{
     }
   }
 
+  drawGameOver(){
+    let gameover = document.getElementById('gameover');
+    gameover.style.display = 'block';
+  }
+
   * getShapeBlocksCords(shape){
     // Generator to return cords in shape that are set to 1
     for (let x = 0; x < 4; x++){
@@ -173,7 +193,6 @@ class Game{
       let yPos = this.currBlockPos.y + (y * this.blockSize);
 
       if (xPos < 0 || xPos >= (this.width * this.blockSize)){
-        console.log('out')
         // out of bounds
         return;
       }
@@ -181,7 +200,6 @@ class Game{
       // check collision
     }
 
-    console.log('move bitch')
     this.currBlockPos.x = newX;
   }
 
