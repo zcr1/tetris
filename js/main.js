@@ -31,6 +31,4 @@
         game.startGame();
     }
   }, false);
-
-
 })();
