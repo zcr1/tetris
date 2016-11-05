@@ -67,7 +67,7 @@ class Game{
         if (shape[x][y] == 1){
           let xPos = this.currBlockPos.x + (x * this.blockSize);
           let yPos = this.currBlockPos.y + (y * this.blockSize);
-          if (this.isCollision(xPos, yPos)){
+          if (this.isCollision(xPos, yPos + this.blockSize)){
             this.setBlock();
             return;
           }
@@ -77,11 +77,20 @@ class Game{
   }
 
   isCollision(xPos, yPos){
-    // is the given x and y pos touching another set block or bottom?
-    if ((yPos + this.blockSize) == (this.blockSize * this.height)){
+    // is yPos touching the bottom?
+    if ((yPos) == (this.blockSize * this.height)){
       return true;
     }
-    return false;
+    // touching another block?
+    let xCord = (xPos / this.blockSize);
+    let yCord = (yPos / this.blockSize);
+
+    // still above board
+    if (yCord < 0){
+      return false;
+    }
+
+    return this.board[xCord][yCord].type != 'E';
   }
 
   setBlock(){
