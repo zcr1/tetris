@@ -82,7 +82,7 @@ class Game{
       let xPos = this.currBlockPos.x + (x * this.blockSize);
       let yPos = this.currBlockPos.y + (y * this.blockSize);
 
-      if (this.isCollision(xPos, yPos + this.blockSize)){
+      if (this.shouldSet(xPos, yPos + this.blockSize)){
         this.setBlock();
         this.clearRows();
         return true;
@@ -90,7 +90,7 @@ class Game{
     }
   }
 
-  isCollision(xPos, yPos){
+  shouldSet(xPos, yPos){
     // is yPos touching the bottom?
     if ((yPos) == (this.blockSize * this.height)){
       return true;
@@ -225,24 +225,45 @@ class Game{
     }
   }
 
-  isOutOfBounds(x, y, shape){
+  isOutOfBounds(xPos, yPos, shape){
     for (let [xCord, yCord] of this.getShapeBlocksCords(shape)){
-      let xPos = x + (xCord * this.blockSize);
-      let yPos = y + (yCord * this.blockSize);
+      let x = xPos + (xCord * this.blockSize);
+      let y = yPos + (yCord * this.blockSize);
 
-      if (xPos < 0 || xPos >= (this.width * this.blockSize)){
+      if (x < 0 || x >= (this.width * this.blockSize)){
         return true;
       }
     }
+  }
+
+  isCollision(xPos, yPos, shape){
+    for (let [xCord, yCord] of this.getShapeBlocksCords(shape)){
+      let x = (xPos / this.blockSize) + xCord;
+      let y = (yPos / this.blockSize) + yCord;
+
+      if (y >= 0 && x < this.width && this.board[x][y].type != 'E'){
+        return true;
+      }
+    }
+    return false;
   }
 
   move(dir){
     let shape = this.currBlock.shapes[this.currShapeIndex];
     let newX = this.currBlockPos.x + (this.blockSize * dir);
 
-    if (!this.isOutOfBounds(newX, this.currBlockPos.y, shape)){
-      this.currBlockPos.x = newX;
+    // check bounds
+    if (this.isOutOfBounds(newX, this.currBlockPos.y, shape)){
+      return;
     }
+
+    // check collisions
+    if (this.isCollision(newX, this.currBlockPos.y, shape)){
+      return;
+    }
+
+    // good to move
+    this.currBlockPos.x = newX;
   }
 
   rotate(){
@@ -266,8 +287,11 @@ class Game{
     }
 
     // check collisions
+    if (this.isCollision(this.currBlockPos.x, this.currBlockPos.y, shape)){
+      return;
+    }
 
-
+    // rotation is good to go
     this.currShapeIndex = nextIndex;
   }
 
