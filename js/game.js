@@ -22,10 +22,9 @@ class Game{
     this.currBlock = null;
     this.currBlockPos = null;
 
-    for (let y = -3; y < this.height; y++){
-      // Store 4 extra rows on top but don't draw them
+    for (let x = 0; x < this.width; x++){
       let row = [];
-      for (let x = 0; x < this.width; x++){
+      for (let y = 0; y < this.height; y++){
         row.push(new Tile('E', x * this.blockSize, y * this.blockSize, this.blockSize));
       }
       this.board.push(row);
@@ -34,59 +33,101 @@ class Game{
 
   startGame(){
     this.initialize()
-    setInterval(this.update.bind(this), 500);
+    setInterval(this.update.bind(this), 250);
   }
 
   update(){
     // Game loop
     if (!this.currBlock){
-      this.currBlock = this.getNextBlock();
       this.currShapeIndex = 0;
-      this.currBlockPos = {x: (this.width / 2) - 2, y: 0};
+      this.currBlock = this.getNextBlock();
+      this.currBlockPos = {
+        x: (this.width / 2 - 2) * this.blockSize,
+        y: -(this.blockSize * 4) // top starts 4 blocks negative
+      };
     }
     else{
-      this.updateBlockPos();
+      this.updateBlock();
     }
 
+    this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
     this.drawBoard()
-    this.drawCurrentBlock();
+    if (this.currBlock){
+      this.drawCurrentBlock();
+    }
   }
 
-  updateBlockPos(){
-    // increment y position
+  updateBlock(){
     this.currBlockPos.y += this.blockSize;
+
+    // Check if current block needs set
+    let shape = this.currBlock.shapes[this.currShapeIndex];
+    for (let x = 0; x < 4; x++){
+      for (let y = 0; y < 4; y++){
+        if (shape[x][y] == 1){
+          let xPos = this.currBlockPos.x + (x * this.blockSize);
+          let yPos = this.currBlockPos.y + (y * this.blockSize);
+          if (this.isCollision(xPos, yPos)){
+            this.setBlock();
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  isCollision(xPos, yPos){
+    // is the given x and y pos touching another set block or bottom?
+    if ((yPos + this.blockSize) == (this.blockSize * this.height)){
+      return true;
+    }
+    return false;
+  }
+
+  setBlock(){
+    // Set the current block "in stone"
+    let shape = this.currBlock.shapes[this.currShapeIndex];
+    for (let x = 0; x < 4; x++){
+      for (let y = 0; y < 4; y++){
+        if (shape[x][y] == 1){
+          let xCord = (this.currBlockPos.x / this.blockSize) + x;
+          let yCord = (this.currBlockPos.y / this.blockSize) + y;
+          this.board[xCord][yCord].type = this.currBlock.type;
+        }
+      }
+    }
+
+    this.currBlock = null;
   }
 
   getNextBlock(){
     // get 1 of the 7 blocks randomly
     let i = Math.floor(Math.random() * (7));
     let blockChoice = this.blockChoices[i];
-    return this.blocks[blockChoice];
+    let nextBlock = this.blocks[blockChoice];
+    nextBlock.type = blockChoice;
+    return nextBlock;
   }
 
   drawBoard(){
-    for (let y = 0; y < this.board.length; y++){
-      for (let tile of this.board[y]){
+    for (let x = 0; x < this.board.length; x++){
+      for (let tile of this.board[x]){
         this.drawTile(tile);
       }
     }
   }
 
   drawTile(tile){
-    switch (tile.type){
-      case 'E':
-        // Empty blocks draw a tiny square in center of tile
-        let size = 2;
-        let x = (tile.x + this.blockSize) - (this.blockSize / 2) - (size / 2);
-        let y = (tile.y + this.blockSize) - (this.blockSize / 2) - (size / 2);
-        this.ctx.fillStyle = this.blocks.E.color;
-        this.ctx.fillRect(x, y, 2, 2);
-        break;
-
-      default:
-        this.ctx.fillStyle = this.blocks[tile.type].color;
-        this.ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
-        break;
+    this.ctx.fillStyle = this.blocks[tile.type].color;
+    if (tile.type == 'E'){
+      // Empty blocks draw a tiny square in center of tile
+      let size = 2;
+      let x = (tile.x + this.blockSize) - (this.blockSize / 2) - (size / 2);
+      let y = (tile.y + this.blockSize) - (this.blockSize / 2) - (size / 2);
+      this.ctx.fillRect(x, y, 2, 2);
+    }
+    else{
+      this.ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
     }
   }
 
@@ -94,8 +135,9 @@ class Game{
     // Each block shape is 4x4
     this.ctx.fillStyle = this.currBlock.color;
     let shape = this.currBlock.shapes[this.currShapeIndex];
-    for (let y = 0; y < 4; y ++){
-      for (let x = 0; x < 4; x++){
+
+    for (let x = 0; x < 4; x++){
+      for (let y = 0; y < 4; y++){
         if (shape[x][y] == 1){
           let xPos = this.currBlockPos.x + (x * this.blockSize);
           let yPos = this.currBlockPos.y + (y * this.blockSize);
