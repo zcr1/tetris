@@ -130,7 +130,7 @@ var BLOCKS = {
     ]
   },
   Z: {
-    color: '#FFCDD2', // red
+    color: '#F44336', // red
     shapes: [
       [
         [0,0,0,0],

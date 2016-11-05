@@ -21,6 +21,7 @@ class Game{
     this.board = [];
     this.currBlock = null;
     this.currBlockPos = null;
+    this.delta = 0;
 
     for (let x = 0; x < this.width; x++){
       let row = [];
@@ -33,11 +34,12 @@ class Game{
 
   startGame(){
     this.initialize()
-    setInterval(this.update.bind(this), 250);
+    setInterval(this.update.bind(this), 20);
   }
 
   update(){
     // Game loop
+    this.delta += 1;
     if (!this.currBlock){
       this.currShapeIndex = 0;
       this.currBlock = this.getNextBlock();
@@ -46,8 +48,9 @@ class Game{
         y: -(this.blockSize * 4) // top starts 4 blocks negative
       };
     }
-    else{
+    else if (this.delta >= 15){
       this.updateBlock();
+      this.delta = 0;
     }
 
     this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
@@ -156,6 +159,17 @@ class Game{
     }
   }
 
+  move(x){
+    this.currBlockPos.x += this.blockSize * x;
+  }
+
+  rotate(){
+
+  }
+
+  drop(){
+
+  }
 }
 
 
