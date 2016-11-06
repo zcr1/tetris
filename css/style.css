@@ -85,6 +85,13 @@ button:focus {
     color: #fff;
 }
 
+#high-score{
+    position: absolute;
+    left: 278px;
+    top: 55px;
+    color: #fff;
+}
+
 #controls{
     position: absolute;
     top: 670px;

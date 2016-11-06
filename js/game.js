@@ -21,8 +21,11 @@ class Game{
     this.delta = 0;
     this.score = 0;
     this.gameOver = false;
+    this.highScore = localStorage.getItem('high-score') || 0;
+
     let gameover = document.getElementById('gameover');
     gameover.style.display = 'none';
+
 
     for (let x = 0; x < this.width; x++){
       let row = [];
@@ -46,6 +49,7 @@ class Game{
     if (this.gameOver){
       clearInterval(this.loopInterval);
       this.drawGameOver();
+      this.setHighScore();
     }
     else{
       this.delta += 1;
@@ -214,6 +218,9 @@ class Game{
   drawScore(){
     let score = document.getElementById('score');
     score.innerHTML = '<span>Score ' + this.score + '</span>';
+
+    let highScore = document.getElementById('high-score');
+    highScore.innerHTML = '<span>High Score ' + this.highScore + '</span>';
   }
 
   drawGameOver(){
@@ -306,6 +313,13 @@ class Game{
     // instant drop block
     if (this.currBlock){
       while (!this.updateBlockGravity() && !this.gameOver);
+    }
+  }
+
+  setHighScore(){
+    if (this.score > this.highScore){
+      this.highScore = this.score;
+      localStorage.setItem('high-score', this.score);
     }
   }
 }
