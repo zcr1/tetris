@@ -228,16 +228,12 @@ class Game{
   drawNextBlock(){
     // Draw the next block preview
     let shape = this.nextBlock.shapes[0];
-    for (let x = 0; x < 4; x++){
-      for (let y = 0; y < 4; y++){
-        if (shape[y][x] == 1){
-          let xPos = x * this.blockSize;
-          let yPos = y * this.blockSize;
-          this.nextCtx.fillStyle = this.nextBlock.color;
-          this.nextCtx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
-          this.nextCtx.strokeRect(xPos, yPos, this.blockSize, this.blockSize)
-        }
-      }
+    for (let [x, y] of this.getShapeBlocksCords(shape)){
+      let xPos = x * this.blockSize;
+      let yPos = y * this.blockSize;
+      this.nextCtx.fillStyle = this.nextBlock.color;
+      this.nextCtx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+      this.nextCtx.strokeRect(xPos, yPos, this.blockSize, this.blockSize)
     }
   }
 
