@@ -19,12 +19,21 @@ body{
     transform: translate(-50%, -50%);
 }
 
-#canvas{
+#game-canvas{
     background-color: #212121;
     border: 1px solid #212121;
     position: absolute;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#next-canvas{
+    background-color: #212121;
+    border: 1px solid #212121;
+    position: absolute;
+    top: 20%;
+    left: 15%;
     transform: translate(-50%, -50%);
 }
 
@@ -84,6 +93,14 @@ button:focus {
     top: 55px;
     color: #fff;
 }
+
+#high-score{
+    position: absolute;
+    left: 278px;
+    top: 55px;
+    color: #fff;
+}
+
 #controls{
     position: absolute;
     top: 670px;

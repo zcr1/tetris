@@ -1,9 +1,10 @@
 class Game{
 
-  constructor(canvas, width, height, blockSize){
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
-    this.ctx.strokeStyle = '#fff';
+  constructor(gameCanvas, nextCanvas, width, height, blockSize){
+    this.gameCtx = gameCanvas.getContext('2d');
+    this.gameCtx.strokeStyle = '#fff';
+    this.nextCtx = nextCanvas.getContext('2d');
+    this.nextCtx.strokeStyle = '#fff';
     this.width = width;
     this.height = height;
     this.blockSize = blockSize;
@@ -17,12 +18,17 @@ class Game{
     // Initialize a new game
     this.board = [];
     this.currBlock = null;
+    this.nextBlock = null;
     this.currBlockPos = null;
     this.delta = 0;
     this.score = 0;
     this.gameOver = false;
+    this.highScore = localStorage.getItem('high-score') || 0;
+
     let gameover = document.getElementById('gameover');
     gameover.style.display = 'none';
+
+    this.getNextBlock();
 
     for (let x = 0; x < this.width; x++){
       let row = [];
@@ -46,12 +52,14 @@ class Game{
     if (this.gameOver){
       clearInterval(this.loopInterval);
       this.drawGameOver();
+      this.setHighScore();
     }
     else{
       this.delta += 1;
       if (!this.currBlock){
         this.currShapeIndex = 0;
-        this.currBlock = this.getNextBlock();
+        this.currBlock = this.nextBlock;
+        this.getNextBlock();
 
         // block starts -4 blocks in y direction
         this.currBlockPos = {
@@ -65,11 +73,14 @@ class Game{
         this.score+= 2;
       }
 
-      this.ctx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
+      // clear both canvas
+      this.gameCtx.clearRect(0, 0, this.width * this.blockSize, this.height * this.blockSize);
+      this.nextCtx.clearRect(0, 0, 4 * this.blockSize, 4 * this.blockSize);
+
+      // draw functions
       this.drawBoard()
-      if (this.currBlock){
-        this.drawCurrentBlock();
-      }
+      this.drawNextBlock();
+      this.drawCurrentBlock();
       this.drawScore();
     }
   }
@@ -171,7 +182,7 @@ class Game{
     let blockChoice = this.blockChoices[i];
     let nextBlock = this.blocks[blockChoice];
     nextBlock.type = blockChoice;
-    return nextBlock;
+    this.nextBlock = nextBlock;
   }
 
   drawBoard(){
@@ -183,37 +194,56 @@ class Game{
   }
 
   drawTile(tile){
-    this.ctx.fillStyle = this.blocks[tile.type].color;
+    this.gameCtx.fillStyle = this.blocks[tile.type].color;
     if (tile.type == 'E'){
       // Empty blocks draw a tiny square in center of tile
       let size = 2;
       let x = (tile.x + this.blockSize) - (this.blockSize / 2) - (size / 2);
       let y = (tile.y + this.blockSize) - (this.blockSize / 2) - (size / 2);
-      this.ctx.fillRect(x, y, 2, 2);
+      this.gameCtx.fillRect(x, y, 2, 2);
     }
     else{
-      this.ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
-      this.ctx.strokeRect(tile.x, tile.y, tile.size, tile.size)
+      this.gameCtx.fillRect(tile.x, tile.y, tile.size, tile.size);
+      this.gameCtx.strokeRect(tile.x, tile.y, tile.size, tile.size)
     }
   }
 
   drawCurrentBlock(){
     // Each block shape is 4x4
-    this.ctx.fillStyle = this.currBlock.color;
+    this.gameCtx.fillStyle = this.currBlock.color;
 
     let shape = this.currBlock.shapes[this.currShapeIndex];
 
     for (let [x, y] of this.getShapeBlocksCords(shape)){
       let xPos = this.currBlockPos.x + (x * this.blockSize);
       let yPos = this.currBlockPos.y + (y * this.blockSize);
-      this.ctx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
-      this.ctx.strokeRect(xPos, yPos, this.blockSize, this.blockSize);
+      this.gameCtx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+      this.gameCtx.strokeRect(xPos, yPos, this.blockSize, this.blockSize);
+    }
+  }
+
+  drawNextBlock(){
+    // Draw the next block preview
+    let shape = this.nextBlock.shapes[0];
+    for (let x = 0; x < 4; x++){
+      for (let y = 0; y < 4; y++){
+        if (shape[y][x] == 1){
+          let xPos = x * this.blockSize;
+          let yPos = y * this.blockSize;
+          this.nextCtx.fillStyle = this.nextBlock.color;
+          this.nextCtx.fillRect(xPos, yPos, this.blockSize, this.blockSize);
+          this.nextCtx.strokeRect(xPos, yPos, this.blockSize, this.blockSize)
+        }
+      }
     }
   }
 
   drawScore(){
     let score = document.getElementById('score');
     score.innerHTML = '<span>Score ' + this.score + '</span>';
+
+    let highScore = document.getElementById('high-score');
+    highScore.innerHTML = '<span>High Score ' + this.highScore + '</span>';
   }
 
   drawGameOver(){
@@ -256,6 +286,9 @@ class Game{
   }
 
   move(dir){
+    if (!this.currBlock){
+      return;
+    }
     let shape = this.currBlock.shapes[this.currShapeIndex];
     let newX = this.currBlockPos.x + (this.blockSize * dir);
 
@@ -306,6 +339,13 @@ class Game{
     // instant drop block
     if (this.currBlock){
       while (!this.updateBlockGravity() && !this.gameOver);
+    }
+  }
+
+  setHighScore(){
+    if (this.score > this.highScore){
+      this.highScore = this.score;
+      localStorage.setItem('high-score', this.score);
     }
   }
 }
