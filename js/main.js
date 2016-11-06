@@ -1,6 +1,7 @@
 (function main(){
-  let canvas = document.getElementById('canvas');
-  let game = new Game(canvas, 12, 20, 30);
+  let gameCanvas = document.getElementById('game-canvas');
+  let nextCanvas = document.getElementById('next-canvas');
+  let game = new Game(gameCanvas, nextCanvas, 12, 20, 30);
   game.startGame();
 
   document.addEventListener('keydown', e =>{
