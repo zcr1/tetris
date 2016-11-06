@@ -79,7 +79,7 @@ var BLOCKS = {
     ]
   },
   O: {
-    color: '#FFEB3B', // yellow
+    color: '#FDD835', // yellow
     shapes: [
       [
         [0,0,0,0],
