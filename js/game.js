@@ -209,7 +209,10 @@ class Game{
   }
 
   drawCurrentBlock(){
-    // Each block shape is 4x4
+    if (!this.currBlock){
+      return;
+    }
+
     this.gameCtx.fillStyle = this.currBlock.color;
 
     let shape = this.currBlock.shapes[this.currShapeIndex];
