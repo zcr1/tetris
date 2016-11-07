@@ -63,7 +63,7 @@ class Game{
 
         // block starts -4 blocks in y direction
         this.currBlockPos = {
-          x: (this.width / 2 - 3) * this.blockSize,
+          x: (this.width / 2 - 2) * this.blockSize,
           y: -(this.blockSize * 4)
         };
       }
